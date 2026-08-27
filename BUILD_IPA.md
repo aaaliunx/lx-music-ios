@@ -118,6 +118,9 @@ LX Music 本体**不内置曲库**，需要你在 App 内「设置 → 音乐来
 - **Archive 报签名错误**：工作流已用 `CODE_SIGNING_ALLOWED=NO` 关闭签名，正常不会卡在签名；卡在编译则看 Actions 日志里的具体报错。
 - **装上打不开**：iPhone 上「设置 → 通用 → VPN与设备管理」里把你的 Apple ID 开发者证书**信任**一下。
 - **Flipper 相关编译错误**：在仓库根目录加环境变量 `NO_FLIPPER=1` 重新跑（工作流可改 `env` 段）。
+- **打开 App 报错：`react-native-file-system` doesn't seem to be linked**：
+  - 根因：**上游 `lyswhut/react-native-file-system` 只有 Android 原生实现，`ios/` 目录是空的**，iOS 端没有 `FileSystemModule` 原生模块，运行时 `NativeModules.FileSystemModule` 为 undefined 就抛这个错。这**不是构建配置问题**（之前把 git+ssh 改 https 的修复只会让它装上"空壳"库，二进制产物一模一样）。
+  - 修复：本仓库把 `react-native-file-system` 指向带 iOS 原生实现的 fork `leguagou-debug/react-native-file-system`（commit `63c56f6`，用 `NSFileManager`+`zlib`+`CommonCrypto` 实现了文件操作 / gzip / hash 全套）。重新触发一次构建即可得到真正的 iOS IPA。
 
 ---
 
