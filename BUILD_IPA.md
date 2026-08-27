@@ -57,6 +57,33 @@ eas build --platform ios --profile development
 
 ---
 
+## 方案 C：SideStore 自动续签（推荐已装 SideStore / LiveContainer 的用户）
+
+如果你已经装了 **SideStore / LiveContainer**，就完全不用再每 7 天手动续签了。
+SideStore 支持**设备端自动续签 + 快捷指令定时触发**。
+
+### 1. 先确保 SideStore 自身能刷新
+- iOS **设置 → SideStore**：打开「后台 App 刷新」
+- SideStore App 内 **设置**：打开「Background Refresh / 自动刷新」
+- 确保 **VPN 通道**处于启用状态：新版用内置的 `LocalDevVPN`，旧版/某些安装包用 `WireGuard`（按你安装时的提示操作）
+- 确认 **Anisette 服务器**已填（没有可先用公共地址，如 `https://anisette.jawshoeadan.me/`；若 Apple ID 被锁，建议自建一个）
+
+### 2. 创建自动续签的「个人自动化」快捷指令
+1. iPhone 打开 **快捷指令 App** → 底部「自动化」→「创建个人自动化」（或右上角 `+`）
+2. 选择 **「特定时间」** → 设为每天某个时间（建议早上 7:00 或你插着充电器的时候）→「下一步」
+3. 添加操作：搜索 **「SideStore」** 或 **「Refresh」** → 选择 **「Refresh All Apps」**
+4. （可选）在前面加一步 **「设定 VPN」** → 启用 SideStore / WireGuard 配置，确保刷新通道开着
+5. 「下一步」→ **关闭「运行前询问」** → 点「不询问」→ 完成
+
+以后每天到点，SideStore 就会自动刷新所有侧载 App（包括 LiveContainer 本体）。
+
+### 3. 注意事项
+- 自动刷新时手机需要联网，且**不要开启低电量模式**
+- 若失败，先手动打开 SideStore → 点刷新，看是 Anisette 服务器问题还是 VPN 没连
+- **LiveContainer 里的 App 不需要单独续签**：只要 LiveContainer 本身签名有效，里面的 App 就能继续用
+
+---
+
 ## 关于「音源」
 LX Music 本体**不内置曲库**，需要你在 App 内「设置 → 音乐来源」导入第三方音源脚本（网上搜 “LX Music 音源” 即可找到）。
 音源的合规性由你自行判断，建议仅用于个人学习试听。
