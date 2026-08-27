@@ -23,6 +23,11 @@ jobs:
           node-version: 18
           cache: npm
 
+      # react-native-file-system 通过 git+ssh 从 GitHub 引用，在 CI 无 SSH key 时会拉取失败，
+      # 导致运行时报 "package doesn't seem to be linked"。全局把 ssh 协议替换为 https。
+      - name: Force GitHub dependencies over HTTPS
+        run: git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
+
       - name: Install npm dependencies
         run: npm ci
 
