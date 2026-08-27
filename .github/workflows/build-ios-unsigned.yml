@@ -3,11 +3,14 @@ name: Build LX Music iOS (unsigned IPA)
 on:
   workflow_dispatch:        # 手动触发
   push:
-    branches: [ master ]    # 推送到 master 自动触发
+    branches: [ master, main ]    # 推送到 master/main 自动触发
 
 jobs:
   build-ios:
-    runs-on: macos-latest
+    # 固定到 macOS-14 (Xcode 15.4)。注意：macos-latest 现在是 macOS-26 / Xcode 26，
+    # 其 iOS 26 SDK 已移除 swiftCompatibility56/Concurrency 兼容库，
+    # 会导致 Swift 库（SwiftAudioEx、react-native-track-player）链接失败。
+    runs-on: macos-14
     env:
       CI: "true"
     steps:
