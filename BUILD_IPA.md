@@ -84,6 +84,29 @@ SideStore 支持**设备端自动续签 + 快捷指令定时触发**。
 
 ---
 
+## iOS 26.4+ 特别说明（SideStore 快捷指令报错"功能不属于此版本"）
+
+iOS 26.4 起苹果改了底层网络机制，SideStore 的「Refresh All Apps」**快捷指令动作会失效**，运行时报
+"此操作在当前版本不可用 / 不属于此版本"。这是 SideStore 的已知 bug，不是你设置的问题。
+
+### 最稳的替代方案：用「打开 App」绕开坏掉的动作
+1. 删掉原来那条报错的自动化
+2. 快捷指令 → 自动化 → 创建个人自动化 → 特定时间 → 每天某时
+3. 添加操作：**「打开 App」** → 选 **SideStore**
+4. 关闭「运行前询问」→ 完成
+- 原理：打开 SideStore 会唤醒它的后台刷新守护进程，自动续签，完全不碰坏掉的「Refresh All Apps」意图
+- 同时确认 SideStore 设置里「Background Refresh / 后台应用刷新」已开启
+
+### 如果还想用「Refresh All Apps」动作
+- 删除该快捷指令/自动化，**重建一次**并重新添加「Refresh All Apps」动作（常是动作残留了旧版本引用导致报错）
+- 或直接使用现成模板（把里面的 VPN 变量改成你的 LocalDevVPN）：`https://www.icloud.com/shortcuts/faf5331bf084b45bf86479bddb14a92ac`
+
+### 版本与签名要点
+- iOS 26.4+ 之后，**旧版 SideStore 连手动刷新都会失败**。若你在 SideStore → 我的应用 → 点「7 天」手动刷新是成功的，说明只是快捷指令动作的问题，按上面处理即可；若手动也失败，需升级到带 iOS 26.4 修复的 **Nightly/Alpha 版 SideStore**（用 iloader 或 SideStore 源装最新 nightly）。
+- 若升级后仍报网络/签名错误：在 LocalDevVPN 设置里把 Tunnel / Device IP 设成你 WiFi 子网里一个空闲 IP（设置 → WiFi → 看 IPv4 地址）。
+
+---
+
 ## 关于「音源」
 LX Music 本体**不内置曲库**，需要你在 App 内「设置 → 音乐来源」导入第三方音源脚本（网上搜 “LX Music 音源” 即可找到）。
 音源的合规性由你自行判断，建议仅用于个人学习试听。
