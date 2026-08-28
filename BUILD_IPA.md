@@ -28,13 +28,13 @@ git push -u origin main
 - 云端用的是 macOS  runner，约 **5–15 分钟**完成（要装 cocoapods + 编译 RN）。
 
 ### 3. 下载未签名 IPA
-- 构建完成后，在 Actions 页面本次运行的 **Artifacts** 里下载 `LxMusicMobile-unsigned-ipa`。
-- 解压得到 `LxMusicMobile-unsigned.ipa`。
+- 构建完成后，在 Actions 页面本次运行的 **Artifacts** 里下载 `luoxue-ios-unsigned`。
+- 解压得到 `落雪-unsigned.ipa`。
 
 ### 4. 用免费 Apple ID 签名并侧载到 iPhone
 1. 电脑装 **Sideloadly**（https://sideloadly.io ），iPhone 用数据线连电脑。
 2. Sideloadly 里：
-   - IPA 选择刚下载的 `LxMusicMobile-unsigned.ipa`
+   - IPA 选择刚下载的 `落雪-unsigned.ipa`
    - Apple ID 填你的**免费** Apple 账号
    - 点 **Start** → 输入 Apple ID 密码（首次需在 iPhone 上信任开发者：设置 → 通用 → VPN与设备管理 → 信任）
 3. 安装完成，iPhone 上出现「洛雪音乐助手」。
