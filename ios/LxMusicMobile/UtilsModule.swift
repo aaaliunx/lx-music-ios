@@ -111,7 +111,7 @@ class UtilsModule: NSObject, RCTBridgeModule {
         }
     }
 
-    @objc func getWindowSize(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    @objc func getWindowSize(_ resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
             let bounds = UIScreen.main.bounds
             resolve([
