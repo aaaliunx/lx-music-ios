@@ -21,15 +21,19 @@ const lrcTools = {
   init() {
     if (this.isInited) return
     this.isInited = true
-    this.lrc = new Lyric({
-      onPlay: this.onPlay.bind(this),
-      onSetLyric: this.onSetLyric.bind(this),
-      offset: 100, // offset time(ms), default is 150 ms
-    })
+    try {
+      this.lrc = new Lyric({
+        onPlay: this.onPlay.bind(this),
+        onSetLyric: this.onSetLyric.bind(this),
+        offset: 100, // offset time(ms), default is 150 ms
+      })
+    } catch (e) {
+      console.error('Lyric init failed:', e)
+      this.isInited = false
+    }
   },
   onPlay(line: number, text: string) {
     this.currentLineData.line = line
-    // console.log(line)
     this.currentLineData.text = text
     for (const hook of this.playHooks) hook(line, text)
   },
@@ -55,10 +59,11 @@ const lrcTools = {
     this.setLyricHooks.splice(this.setLyricHooks.indexOf(hook), 1)
   },
   setLyric() {
+    if (!this.lrc) return
     const extendedLyrics = [] as string[]
     if (this.isShowTranslation && this.translationText) extendedLyrics.push(this.translationText)
     if (this.isShowRoma && this.romaText) extendedLyrics.push(this.romaText)
-    this.lrc!.setLyric(this.lyricText, extendedLyrics)
+    this.lrc.setLyric(this.lyricText, extendedLyrics)
   },
 }
 
@@ -75,7 +80,8 @@ export const setLyric = (lyric: string, translation?: string, romalrc?: string) 
   lrcTools.setLyric()
 }
 export const setPlaybackRate = (playbackRate: number) => {
-  lrcTools.lrc!.setPlaybackRate(playbackRate)
+  if (!lrcTools.lrc) return
+  lrcTools.lrc.setPlaybackRate(playbackRate)
 }
 export const toggleTranslation = (isShow: boolean) => {
   lrcTools.isShowTranslation = isShow
@@ -88,14 +94,14 @@ export const toggleRoma = (isShow: boolean) => {
   lrcTools.setLyric()
 }
 export const play = (time: number) => {
-  // console.log(time)
+  if (!lrcTools.lrc) return
   lrcTools.isPlay = true
-  lrcTools.lrc!.play(time)
+  lrcTools.lrc.play(time)
 }
 export const pause = () => {
-  // console.log('pause')
+  if (!lrcTools.lrc) return
   lrcTools.isPlay = false
-  lrcTools.lrc!.pause()
+  lrcTools.lrc.pause()
 }
 
 // on lyric play hook
@@ -106,7 +112,7 @@ export const useLrcPlay = (autoUpdate = true) => {
     const setLrcCallback: SetLyricHook = () => {
       setLrcInfo({ line: 0, text: '' })
     }
-    const playCallback: PlayHook = (line, text) => {
+    const playCallback: PlayHook = (line: number, text: string) => {
       setLrcInfo({ line, text })
     }
     lrcTools.addSetLyricHook(setLrcCallback)
@@ -125,7 +131,7 @@ export const useLrcPlay = (autoUpdate = true) => {
 export const useLrcSet = () => {
   const [lines, setLines] = useState<Lines>(lrcTools.currentLines)
   useEffect(() => {
-    const callback = (lines: Lines) => {
+    const callback: SetLyricHook = (lines: Lines) => {
       setLines(lines)
     }
     lrcTools.addSetLyricHook(callback)
@@ -134,4 +140,3 @@ export const useLrcSet = () => {
 
   return lines
 }
-
