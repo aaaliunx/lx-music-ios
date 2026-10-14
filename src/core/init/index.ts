@@ -13,6 +13,8 @@ import commonActions from '@/store/common/action'
 import settingState from '@/store/setting/state'
 import { bootLog } from '@/utils/bootLog'
 import { cheatTip } from '@/utils/tools'
+import { Platform } from 'react-native'
+import { getStatusBarHeight, getSafeAreaInsets } from '@/utils/nativeModules/utils'
 
 let isFirstPush = true
 const handlePushedHomeScreen = async () => {
@@ -32,6 +34,23 @@ let isInited = false
 export default async () => {
   if (isInited) return handlePushedHomeScreen
   bootLog('Initing...')
+
+  // iOS: 设置状态栏高度和安全区域
+  if (Platform.OS === 'ios') {
+    try {
+      const statusBarHeight = await getStatusBarHeight()
+      commonActions.setStatusbarHeight(statusBarHeight)
+      bootLog(`StatusBar height: ${statusBarHeight}`)
+    } catch (e) {
+      bootLog('StatusBar height failed, using default 44')
+      commonActions.setStatusbarHeight(44)
+    }
+    try {
+      const insets = await getSafeAreaInsets()
+      global.lx.safeAreaInsets = insets
+    } catch (e) {}
+  }
+
   commonActions.setFontSize(global.lx.fontSize)
   bootLog('Font size changed.')
   const setting = await initSetting()
