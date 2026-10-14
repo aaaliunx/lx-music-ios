@@ -1,15 +1,12 @@
 name: Build 落雪 iOS (unsigned IPA)
 
 on:
-  workflow_dispatch:        # 手动触发
+  workflow_dispatch:
   push:
-    branches: [ master, main ]    # 推送到 master/main 自动触发
+    branches: [ master, main ]
 
 jobs:
   build-ios:
-    # 固定到 macOS-14 (Xcode 15.4)。注意：macos-latest 现在是 macOS-26 / Xcode 26，
-    # 其 iOS 26 SDK 已移除 swiftCompatibility56/Concurrency 兼容库，
-    # 会导致 Swift 库（SwiftAudioEx、react-native-track-player）链接失败。
     runs-on: macos-14
     env:
       CI: "true"
@@ -23,8 +20,6 @@ jobs:
           node-version: 18
           cache: npm
 
-      # react-native-file-system 通过 git+ssh 从 GitHub 引用，在 CI 无 SSH key 时会拉取失败，
-      # 导致运行时报 "package doesn't seem to be linked"。全局把 ssh 协议替换为 https。
       - name: Force GitHub dependencies over HTTPS
         run: git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
 
@@ -39,6 +34,11 @@ jobs:
 
       - name: Install Pods
         run: cd ios && bundle exec pod install
+
+      - name: Add Swift native modules to Xcode project
+        run: |
+          gem install xcodeproj
+          ruby ios/add_native_modules.rb
 
       - name: Build unsigned archive
         run: |
