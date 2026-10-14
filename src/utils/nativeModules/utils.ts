@@ -2,11 +2,10 @@ import { AppState, BackHandler, Dimensions, NativeEventEmitter, NativeModules, P
 
 const { UtilsModule } = NativeModules
 
-// iOS 上 UtilsModule 不存在，提供空实现兜底，防止启动即崩
+// iOS 上 UtilsModule 可能不存在，提供空实现兜底，防止启动即崩
 const SafeUtilsModule = UtilsModule ?? {
   exitApp: () => {
     if (Platform.OS === 'ios') {
-      // iOS 不允许 App 主动退出，退到后台即可
       BackHandler.exitApp()
     }
   },
@@ -23,6 +22,8 @@ const SafeUtilsModule = UtilsModule ?? {
   listenWindowSizeChanged: () => {},
   isIgnoringBatteryOptimization: async () => false,
   requestIgnoreBatteryOptimization: async () => false,
+  getStatusBarHeight: async () => (Platform.OS === 'ios' ? 44 : 0),
+  getSafeAreaInsets: async () => ({ top: 44, bottom: 34 }),
 }
 
 export const exitApp = SafeUtilsModule.exitApp
@@ -73,7 +74,6 @@ export const getSystemLocales = async (): Promise<string> => {
 }
 
 export const onScreenStateChange = (_handler: (state: 'ON' | 'OFF') => void): (() => void) => {
-  // iOS 无此事件，返回空取消函数
   return () => {}
 }
 
@@ -93,3 +93,7 @@ export const isIgnoringBatteryOptimization = async (): Promise<boolean> => {
 export const requestIgnoreBatteryOptimization = async (): Promise<boolean> => {
   return SafeUtilsModule.requestIgnoreBatteryOptimization()
 }
+
+export const getStatusBarHeight = SafeUtilsModule.getStatusBarHeight as () => Promise<number>
+
+export const getSafeAreaInsets = SafeUtilsModule.getSafeAreaInsets as () => Promise<{ top: number, bottom: number }>
