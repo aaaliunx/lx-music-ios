@@ -11,7 +11,7 @@ import JavaScriptCore
 
 @objc(UserApiModule)
 class UserApiModule: RCTEventEmitter {
-    static func moduleName() -> String! {
+    override static func moduleName() -> String! {
         return "UserApiModule"
     }
 
@@ -132,8 +132,8 @@ class UserApiModule: RCTEventEmitter {
                 }
 
                 let requestKey = json["requestKey"] as? String ?? ""
-                let error = json["error"] as? String ?? NSNull()
-                let response = json["response"] ?? NSNull()
+                let error: Any = json["error"] as? String ?? NSNull()
+                let response: Any = json["response"] ?? NSNull()
 
                 let userApi = context.objectForKeyedSubscript("userApi")
                 let callback = userApi?.objectForKeyedSubscript("_handleResponse")
