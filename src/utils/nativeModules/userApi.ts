@@ -1,11 +1,19 @@
-import { NativeEventEmitter, NativeModules } from 'react-native'
+import { NativeEventEmitter, NativeModules, Platform } from 'react-native'
 
 const { UserApiModule } = NativeModules
 
+// iOS 上 UserApiModule 不存在，提供空实现兜底
+const SafeUserApiModule = UserApiModule ?? {
+  loadScript: () => {},
+  sendAction: () => {},
+  destroy: () => {},
+}
+
 let loadScriptInfo: LX.UserApi.UserApiInfo | null = null
+
 export const loadScript = (info: LX.UserApi.UserApiInfo & { script: string }) => {
   loadScriptInfo = info
-  UserApiModule.loadScript({
+  SafeUserApiModule.loadScript({
     id: info.id,
     name: info.name,
     description: info.description,
@@ -26,15 +34,15 @@ export interface SendResponseParams {
     body: any
   } | null
 }
+
 export interface SendActions {
   request: LX.UserApi.UserApiRequestParams
   response: SendResponseParams
 }
-export const sendAction = <T extends keyof SendActions>(action: T, data: SendActions[T]) => {
-  UserApiModule.sendAction(action, JSON.stringify(data))
-}
 
-// export const clearAppCache = CacheModule.clearAppCache as () => Promise<void>
+export const sendAction = <T extends keyof SendActions>(action: T, data: SendActions[T]) => {
+  SafeUserApiModule.sendAction(action, JSON.stringify(data))
+}
 
 export interface InitParams {
   status: boolean
@@ -48,11 +56,13 @@ export interface ResponseParams {
   requestKey: string
   result: any
 }
+
 export interface UpdateInfoParams {
   name: string
   log: string
   updateUrl: string
 }
+
 export interface RequestParams {
   requestKey: string
   url: string
@@ -64,6 +74,7 @@ export interface RequestParams {
     binary: boolean
   }
 }
+
 export type CancelRequestParams = string
 
 export interface Actions {
@@ -74,10 +85,13 @@ export interface Actions {
   showUpdateAlert: UpdateInfoParams
   log: string
 }
+
 export type ActionsEvent = { [K in keyof Actions]: { action: K, data: Actions[K] } }[keyof Actions]
 
-export const onScriptAction = (handler: (event: ActionsEvent) => void): () => void => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+export const onScriptAction = (_handler: (event: ActionsEvent) => void): () => void => {
+  // iOS 上 UserApiModule 不存在，返回空取消函数，不创建 NativeEventEmitter
+  if (!UserApiModule) return () => {}
+
   const eventEmitter = new NativeEventEmitter(UserApiModule)
   const eventListener = eventEmitter.addListener('api-action', event => {
     if (event.data) event.data = JSON.parse(event.data as string)
@@ -87,14 +101,13 @@ export const onScriptAction = (handler: (event: ActionsEvent) => void): () => vo
     } else if (event.action == 'showUpdateAlert') {
       if (!loadScriptInfo?.allowShowUpdateAlert) return
     }
-    handler(event as ActionsEvent)
+    _handler(event as ActionsEvent)
   })
-
   return () => {
     eventListener.remove()
   }
 }
 
 export const destroy = () => {
-  UserApiModule.destroy()
+  SafeUserApiModule.destroy()
 }
