@@ -11,11 +11,11 @@ import CommonCrypto
 
 @objc(CryptoModule)
 class CryptoModule: NSObject, RCTBridgeModule {
-    override static func moduleName() -> String! {
+    static func moduleName() -> String! {
         return "CryptoModule"
     }
 
-    override static func requiresMainQueueSetup() -> Bool {
+    static func requiresMainQueueSetup() -> Bool {
         return false
     }
 
