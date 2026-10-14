@@ -27,16 +27,17 @@ swift_files = Dir.glob('ios/LxMusicMobile/*.swift').map { |f| File.basename(f) }
 puts "Swift files found: #{swift_files.inspect}"
 
 swift_files.each do |filename|
-  existing = main_group.files.find { |f| f.path == filename }
+  full_path = "LxMusicMobile/#{filename}"
+  existing = main_group.files.find { |f| f.path == full_path || f.path == filename }
   if existing
     puts "  #{filename} already in project"
     next
   end
 
-  # Create file reference
-  file_ref = main_group.new_reference(filename)
+  # Create file reference - use full path like existing files (e.g. LxMusicMobile/AppDelegate.h)
+  file_ref = main_group.new_reference(full_path)
   file_ref.last_known_file_type = 'sourcecode.swift'
-  file_ref.path = filename
+  file_ref.path = full_path
   file_ref.name = filename
   file_ref.source_tree = '<group>'
 
@@ -48,11 +49,12 @@ end
 bridging_header_path = 'ios/LxMusicMobile/LxMusicMobile-Bridging-Header.h'
 if File.exist?(bridging_header_path)
   header_name = 'LxMusicMobile-Bridging-Header.h'
-  existing_header = main_group.files.find { |f| f.path == header_name }
+  header_full_path = "LxMusicMobile/#{header_name}"
+  existing_header = main_group.files.find { |f| f.path == header_full_path || f.path == header_name }
   unless existing_header
-    file_ref = main_group.new_reference(header_name)
+    file_ref = main_group.new_reference(header_full_path)
     file_ref.last_known_file_type = 'sourcecode.c.h'
-    file_ref.path = header_name
+    file_ref.path = header_full_path
     file_ref.name = header_name
     puts "  Added bridging header"
   end
