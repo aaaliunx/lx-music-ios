@@ -115,7 +115,7 @@ class UserApiModule: RCTEventEmitter {
         }
     }
 
-    @objc func sendAction(_ action: String, info: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    @objc func sendAction(_ action: String, info: String, resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         guard let context = self.jsContext else {
             resolve(false)
             return
