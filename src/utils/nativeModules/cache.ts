@@ -2,5 +2,13 @@ import { NativeModules } from 'react-native'
 
 const { CacheModule } = NativeModules
 
-export const getAppCacheSize = async(): Promise<number> => CacheModule.getAppCacheSize().then((size: number) => Math.trunc(size))
-export const clearAppCache = CacheModule.clearAppCache as () => Promise<void>
+// iOS 上 CacheModule 不存在，提供空实现兜底
+const SafeCacheModule = CacheModule ?? {
+  getAppCacheSize: async () => 0,
+  clearAppCache: async () => {},
+}
+
+export const getAppCacheSize = async (): Promise<number> =>
+  SafeCacheModule.getAppCacheSize().then((size: number) => Math.trunc(size))
+
+export const clearAppCache = SafeCacheModule.clearAppCache as () => Promise<void>
