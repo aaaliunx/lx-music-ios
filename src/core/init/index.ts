@@ -1,4 +1,4 @@
-import { initSetting, showPactModal } from '@/core/common'
+import { initSetting, showPactModal, updateSetting } from '@/core/common'
 import registerPlaybackService from '@/plugins/player/service'
 import initTheme from './theme'
 import initI18n from './i18n'
@@ -11,34 +11,31 @@ import { initDeeplink } from './deeplink'
 import { setApiSource } from '@/core/apiSource'
 import commonActions from '@/store/common/action'
 import settingState from '@/store/setting/state'
-import { checkUpdate } from '@/core/version'
 import { bootLog } from '@/utils/bootLog'
 import { cheatTip } from '@/utils/tools'
 
 let isFirstPush = true
-const handlePushedHomeScreen = async() => {
+const handlePushedHomeScreen = async () => {
   await cheatTip()
-  if (settingState.setting['common.isAgreePact']) {
-    if (isFirstPush) {
-      isFirstPush = false
-      void checkUpdate()
-      void initDeeplink()
-    }
-  } else {
-    if (isFirstPush) isFirstPush = false
-    showPactModal()
+  // iOS 上自动同意协议，跳过弹窗
+  if (!settingState.setting['common.isAgreePact']) {
+    void updateSetting({ 'common.isAgreePact': true })
+  }
+  if (isFirstPush) {
+    isFirstPush = false
+    // void checkUpdate()  // 关闭自动更新检查
+    void initDeeplink()
   }
 }
 
 let isInited = false
-export default async() => {
+export default async () => {
   if (isInited) return handlePushedHomeScreen
   bootLog('Initing...')
   commonActions.setFontSize(global.lx.fontSize)
   bootLog('Font size changed.')
   const setting = await initSetting()
   bootLog('Setting inited.')
-  // console.log(setting)
 
   await initTheme(setting)
   bootLog('Theme inited.')
@@ -62,8 +59,6 @@ export default async() => {
 
   void initSync(setting)
   bootLog('Sync inited.')
-
-  // syncSetting()
 
   isInited ||= true
 
