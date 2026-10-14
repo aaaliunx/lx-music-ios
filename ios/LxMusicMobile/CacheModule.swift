@@ -10,11 +10,11 @@ import React
 
 @objc(CacheModule)
 class CacheModule: NSObject, RCTBridgeModule {
-    override static func moduleName() -> String! {
+    static func moduleName() -> String! {
         return "CacheModule"
     }
 
-    override static func requiresMainQueueSetup() -> Bool {
+    static func requiresMainQueueSetup() -> Bool {
         return false
     }
 
