@@ -137,7 +137,7 @@ class UserApiModule: RCTEventEmitter {
 
                 let userApi = context.objectForKeyedSubscript("userApi")
                 let callback = userApi?.objectForKeyedSubscript("_handleResponse")
-                if let cb = callback, cb.isFunction {
+                if let cb = callback, !cb.isUndefined {
                     cb.call(withArguments: [requestKey, error, response])
                 }
             }
