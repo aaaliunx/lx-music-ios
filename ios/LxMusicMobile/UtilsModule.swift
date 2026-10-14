@@ -123,14 +123,14 @@ class UtilsModule: NSObject, RCTBridgeModule {
         }
     }
 
-    @objc func getStatusBarHeight(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    @objc func getStatusBarHeight(_ resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
             let height = UIApplication.shared.statusBarFrame.size.height
             resolve(Int(height))
         }
     }
 
-    @objc func getSafeAreaInsets(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    @objc func getSafeAreaInsets(_ resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
             var top: CGFloat = 0
             var bottom: CGFloat = 0
