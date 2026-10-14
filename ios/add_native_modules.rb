@@ -10,8 +10,14 @@ project = Xcodeproj::Project.open(project_path)
 target = project.targets.find { |t| t.name == 'LxMusicMobile' }
 abort('Target LxMusicMobile not found') unless target
 
-# Find the LxMusicMobile group by path
-main_group = project.main_group.groups.find { |g| g.path == 'LxMusicMobile' }
+# Find the LxMusicMobile group by searching all groups
+main_group = nil
+project.main_group.recursive_children.each do |child|
+  if child.is_a?(Xcodeproj::Project::Object::PBXGroup) && child.display_name == 'LxMusicMobile'
+    main_group = child
+    break
+  end
+end
 abort('Group LxMusicMobile not found') unless main_group
 
 puts "Found group: #{main_group.display_name} (path: #{main_group.path})"
@@ -21,20 +27,21 @@ swift_files = Dir.glob('ios/LxMusicMobile/*.swift').map { |f| File.basename(f) }
 puts "Swift files found: #{swift_files.inspect}"
 
 swift_files.each do |filename|
-  # Check if already added (path relative to group = just filename)
   existing = main_group.files.find { |f| f.path == filename }
   if existing
     puts "  #{filename} already in project"
     next
   end
 
+  # Create file reference
   file_ref = main_group.new_reference(filename)
   file_ref.last_known_file_type = 'sourcecode.swift'
   file_ref.path = filename
   file_ref.name = filename
+  file_ref.source_tree = '<group>'
 
   target.source_build_phase.add_file_reference(file_ref)
-  puts "  Added #{filename}"
+  puts "  Added #{filename} -> path: #{file_ref.path}"
 end
 
 # Add bridging header if it exists on disk
