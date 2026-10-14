@@ -113,10 +113,34 @@ class UtilsModule: NSObject, RCTBridgeModule {
 
     @objc func getWindowSize(_ resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
+            let scale = UIScreen.main.scale
             let bounds = UIScreen.main.bounds
+            // JS 端会再除以 scale，所以这里返回像素
             resolve([
-                "width": Int(bounds.width),
-                "height": Int(bounds.height)
+                "width": Int(bounds.width * scale),
+                "height": Int(bounds.height * scale)
+            ])
+        }
+    }
+
+    @objc func getStatusBarHeight(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            let height = UIApplication.shared.statusBarFrame.size.height
+            resolve(Int(height))
+        }
+    }
+
+    @objc func getSafeAreaInsets(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            var top: CGFloat = 0
+            var bottom: CGFloat = 0
+            if #available(iOS 11.0, *), let window = UIApplication.shared.keyWindow {
+                top = window.safeAreaInsets.top
+                bottom = window.safeAreaInsets.bottom
+            }
+            resolve([
+                "top": Int(top),
+                "bottom": Int(bottom)
             ])
         }
     }
