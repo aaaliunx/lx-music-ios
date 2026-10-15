@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import Search from '../Views/Search'
 import SongList from '../Views/SongList'
 import Mylist from '../Views/Mylist'
@@ -43,9 +43,6 @@ const Main = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.testBar}>
-        <Text style={styles.testText}>Main: {activeId}</Text>
-      </View>
       {page}
     </View>
   )
@@ -55,17 +52,6 @@ const styles = createStyle({
   container: {
     flex: 1,
     overflow: 'hidden',
-    backgroundColor: '#e8e8e8',
-  },
-  testBar: {
-    height: 30,
-    backgroundColor: 'red',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  testText: {
-    color: 'white',
-    fontSize: 12,
   },
 })
 
