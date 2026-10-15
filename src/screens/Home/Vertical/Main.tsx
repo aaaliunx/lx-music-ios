@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { View, Text } from 'react-native'
 import Search from '../Views/Search'
 import SongList from '../Views/SongList'
 import Mylist from '../Views/Mylist'
@@ -6,7 +6,6 @@ import Leaderboard from '../Views/Leaderboard'
 import Setting from '../Views/Setting'
 import commonState from '@/store/common/state'
 import { createStyle } from '@/utils/tools'
-import { setNavActiveId } from '@/core/common'
 import { useEffect, useState } from 'react'
 import type { InitState as CommonState } from '@/store/common/state'
 
@@ -44,6 +43,9 @@ const Main = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.testBar}>
+        <Text style={styles.testText}>Main: {activeId}</Text>
+      </View>
       {page}
     </View>
   )
@@ -53,6 +55,17 @@ const styles = createStyle({
   container: {
     flex: 1,
     overflow: 'hidden',
+    backgroundColor: '#e8e8e8',
+  },
+  testBar: {
+    height: 30,
+    backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  testText: {
+    color: 'white',
+    fontSize: 12,
   },
 })
 
